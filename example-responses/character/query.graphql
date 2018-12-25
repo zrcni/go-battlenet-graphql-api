@@ -1,0 +1,204 @@
+query character($input: CharacterQueryInput!) {
+  character(input: $input) {
+    lastModified
+    name
+    realm
+    battlegroup
+    class
+    race
+    gender
+    level
+    achievementPoints
+    thumbnail
+    calcClass
+    faction
+    totalHonorableKills
+    pets {
+      numCollected
+      numNotCollected
+      collected {
+        name
+        spellId
+        creatureId
+        itemId
+        qualityId
+        icon
+        stats {
+          speciesId
+          breedId
+          petQualityId
+          level
+          health
+          power
+          speed
+        }
+        battlePetGuid
+        isFavorite
+        isFirstAbilitySlotSelected
+        isSecondAbilitySlotSelected
+        isThirdAbilitySlotSelected
+        creatureName
+        canBattle
+      }
+    }
+    mounts {
+      numCollected
+      numNotCollected
+      collected {
+        name
+        spellId
+        creatureId
+        itemId
+        qualityId
+        icon
+        stats {
+          speciesId
+          breedId
+          petQualityId
+          level
+          health
+          power
+          speed
+        }
+        battlePetGuid
+        isFavorite
+        isFirstAbilitySlotSelected
+        isSecondAbilitySlotSelected
+        isThirdAbilitySlotSelected
+        creatureName
+        canBattle
+      }
+    }
+    averageItemLevel
+    averageItemLevelInBags
+    items {
+      head {
+        ...Item
+      }
+      neck {
+        ...Item
+      }
+    }
+    professions {
+      primary {
+        ...Profession
+      }
+      secondary {
+        ...Profession
+      }
+    }
+    reputation {
+      id
+      name
+      standing
+      value
+      max
+    }
+    stats {
+      health
+      powerType
+      power
+      str
+      agi
+      int
+      sta
+      speedRating
+      speedRatingBonus
+      crit
+      critRating
+      haste
+      hasteRating
+      hasteRatingPercent
+      mastery
+      masteryRating
+      leech
+      leechRating
+      leechRatingBonus
+      versatility
+      versatilityDamageDoneBonus
+      versatilityHealingDoneBonus
+      versatilityDamageTakenBonus
+      avoidanceRating
+      avoidanceRatingBonus
+      spellPen
+      spellCrit
+      spellCritRating
+      mana5
+      mana5Combat
+      armor
+      dodge
+      dodgeRating
+      parry
+      parryRating
+      block
+      blockRating
+      mainHandDmgMin
+      mainHandDmgMax
+      mainHandSpeed
+      mainHandDps
+      offHandDmgMin
+      offHandDmgMax
+      offHandSpeed
+      offHandDps
+      rangedDmgMin
+      rangedDmgMax
+			rangedSpeed
+      rangedDps
+    }
+  }
+}
+
+fragment Item on Item {
+  id
+  name
+  icon
+  quality
+  itemLevel
+  tooltipParams {
+    transmogItem
+    timewalkerLevel
+    azeritePower0
+    azeritePower1
+    azeritePower2
+    azeritePower3
+    azeritePower4
+    azeritePowerLevel
+  }
+  stats {
+    stat
+    amount
+  }
+  armor
+  context
+  bonusLists
+  artifactId
+  displayInfoId
+  artifactAppearanceId
+  appearance {
+    itemId
+    itemAppearanceModId
+    transmogItemAppearanceModId
+  }
+  azeriteItem {
+    azeriteLevel
+    azeriteExperience
+    azeriteExperienceRemaining
+  }
+  azeriteEmpoweredItem {
+    azeritePowers {
+      id
+      tier
+      spellId
+      bonusListId
+    }
+  }
+}
+
+fragment Profession on Profession {
+  id
+  name
+  icon
+  rank
+  max
+  recipes
+}

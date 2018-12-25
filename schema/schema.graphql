@@ -1,0 +1,303 @@
+enum CharacterFeedItemType {
+  LOOT
+  BOSSKILL
+  CRITERIA
+  ACHIEVEMENT
+}
+
+type CharacterFeedCriteria {
+  type: CharacterFeedItemType
+  timestamp: Int
+  achievement: Achievement
+}
+
+type AchievementCriteria {
+  id: Int
+  description: String
+  orderIndex: Int
+  max: Int
+}
+
+type Achievement {
+  id: Int
+  title: String
+  points: Int
+  description: String
+  # rewardItems: [], ??
+  icon: String
+  criteria: [AchievementCriteria]
+  accountWide: Boolean
+  factionId: Int
+}
+
+type CharacterFeedBossKill {
+  type: CharacterFeedItemType
+  timestamp: Int
+  achievement: Achievement
+  featOfStrength: Boolean
+  criteria: AchievementCriteria
+  quantity: Int
+  name: String
+}
+
+type CharacterFeedLoot {
+  type: CharacterFeedItemType
+  timestamp: Int
+  itemId: Int
+  context: String
+  bonusLists: [Int]
+}
+
+type CharacterFeedAchievement {
+  type: CharacterFeedItemType
+  timestamp: Int
+  achievement: Achievement
+  featOfStrength: Boolean
+}
+
+union CharacterFeedItem =
+    CharacterFeedLoot
+  | CharacterFeedBossKill
+  | CharacterFeedCriteria
+  | CharacterFeedAchievement
+
+
+type PetStats {
+  speciesId: Int
+  breedId: Int
+  petQualityId: Int
+  level: Int
+  health: Int
+  power: Int
+  speed: Int
+}
+
+type Pet {
+  name: String
+  spellId: Int
+  creatureId: Int
+  itemId: Int
+  qualityId: Int
+  icon: String
+  stats: PetStats
+  battlePetGuid: String
+  isFavorite: Boolean
+  isFirstAbilitySlotSelected: Boolean
+  isSecondAbilitySlotSelected: Boolean
+  isThirdAbilitySlotSelected: Boolean
+  creatureName: String
+  canBattle: Boolean
+}
+
+type CharacterPets {
+  numCollected: Int
+  numNotCollected: Int
+  collected: [Pet]
+}
+
+type Mount {
+  name: String
+  spellId: Int
+  creatureId: Int
+  itemId: Int
+  qualityId: Int
+  icon: String
+  isGround: Boolean
+  isFlying: Boolean
+  isAquatic: Boolean
+  isJumping: Boolean
+}
+
+type CharacterMounts {
+  numCollected: Int
+  numNotCollected: Int
+  collected: [Pet]
+}
+
+type ItemTooltipParams {
+  transmogItem: Int
+  timewalkerLevel: Int
+  azeritePower0: Int
+  azeritePower1: Int
+  azeritePower2: Int
+  azeritePower3: Int
+  azeritePower4: Int
+  azeritePowerLevel: Int
+}
+
+type ItemStat {
+  stat: Int
+  amount: Int
+}
+
+type TransmogItem {
+  itemId: Int
+  itemAppearanceModId: Int
+  transmogItemAppearanceModId: Int
+}
+
+type AzeriteItem {
+  azeriteLevel: Int
+  azeriteExperience: Int
+  azeriteExperienceRemaining: Int
+}
+
+type AzeritePower {
+  id: Int
+  tier: Int
+  spellId: Int
+  bonusListId: Int
+}
+
+type AzeriteEmpoweredItem {
+  azeritePowers: [AzeritePower]
+}
+
+type Item {
+  id: Int
+  name: String
+  icon: String
+  quality: Int
+  itemLevel: Int
+  tooltipParams: ItemTooltipParams
+  stats: [ItemStat]
+  armor: Int
+  context: String
+  bonusLists: [Int]
+  artifactId: Int
+  displayInfoId: Int
+  artifactAppearanceId: Int
+  appearance: TransmogItem
+  azeriteItem: AzeriteItem
+  azeriteEmpoweredItem: AzeriteEmpoweredItem
+}
+
+type CharacterItems {
+  head: Item
+  neck: Item
+  shoulder: Item
+  back: Item
+  chest: Item
+  shirt: Item
+  tabard: Item
+  wrist: Item
+  hands: Item
+  waist: Item
+  legs: Item
+  feet: Item
+  finger1: Item
+  finger2: Item
+  trinket1: Item
+  trinket2: Item
+  mainHand: Item
+  offHand: Item
+}
+
+type Profession {
+  id: Int
+  name: String
+  icon: String
+  rank: Int
+  max: Int
+  recipes: [Int]
+}
+
+type CharacterProfessions {
+  primary: [Profession]
+  secondary: [Profession]
+}
+
+type Reputation {
+  id: Int
+  name: String
+  standing: Int
+  value: Int
+  max: Int
+}
+
+type CharacterStats {
+  health: Int
+  powerType: String
+  power: Int
+  str: Int
+  agi: Int
+  int: Int
+  sta: Int
+  speedRating: Float
+  speedRatingBonus: Float
+  crit: Float
+  critRating: Float
+  haste: Float
+  hasteRating: Float
+  hasteRatingPercent: Float
+  mastery: Float
+  masteryRating: Float
+  leech: Float
+  leechRating: Float
+  leechRatingBonus: Float
+  versatility: Float
+  versatilityDamageDoneBonus: Float
+  versatilityHealingDoneBonus: Float
+  versatilityDamageTakenBonus: Float
+  avoidanceRating: Float
+  avoidanceRatingBonus: Float
+  spellPen: Float
+  spellCrit: Float
+  spellCritRating: Float
+  mana5: Float
+  mana5Combat: Float
+  armor: Float
+  dodge: Float
+  dodgeRating: Float
+  parry: Float
+  parryRating: Float
+  block: Float
+  blockRating: Float
+  mainHandDmgMin: Float
+  mainHandDmgMax: Float
+  mainHandSpeed: Float
+  mainHandDps: Float
+  offHandDmgMin: Float
+  offHandDmgMax: Float
+  offHandSpeed: Float
+  offHandDps: Float
+  rangedDmgMin: Float
+  rangedDmgMax: Float
+  rangedSpeed: Float
+  rangedDps: Float
+}
+
+type Character {
+  lastModified: Int
+  name: String
+  realm: String
+  battlegroup: String
+  class: Int
+  race: Int
+  gender: Int
+  level: Int
+  achievementPoints: Int
+  thumbnail: String
+  calcClass: String
+  faction: Int
+  totalHonorableKills: Int
+  feed: [CharacterFeedItem]
+  pets: CharacterPets
+  mounts: CharacterMounts
+  averageItemLevel: Int
+  averageItemLevelInBags: Int
+  items: CharacterItems
+  professions: CharacterProfessions
+  reputation: [Reputation]
+  stats: CharacterStats
+}
+
+input CharacterQueryInput {
+  name: String!
+  realm: String!
+  region: String!
+}
+
+type Query {
+  character(input: CharacterQueryInput!): Character
+}

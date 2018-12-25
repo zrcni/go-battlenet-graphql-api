@@ -1,0 +1,24 @@
+# .gqlgen.yml example
+#
+# Refer to https://gqlgen.com/config/
+# for detailed .gqlgen.yml documentation.
+
+schema:
+  - "schema/*.graphql"
+exec:
+  filename: generated.go
+
+model:
+  filename: models_gen.go
+
+models:
+  Character:
+    model: github.com/zrcni/go-bnet-graphql-api.Character
+  CharacterItems:
+    model: github.com/zrcni/go-bnet-graphql-api.CharacterItems
+
+resolver:
+  filename: resolver.go
+  type: Resolver
+
+struct_tag: json
