@@ -2879,19 +2879,15 @@ func (ec *executionContext) _Character_class(ctx context.Context, field graphql.
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Class, nil
+		return obj.Class()
 	})
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*int)
+	res := resTmp.(string)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-
-	if res == nil {
-		return graphql.Null
-	}
-	return graphql.MarshalInt(*res)
+	return graphql.MarshalString(res)
 }
 
 // nolint: vetshadow
@@ -2907,19 +2903,15 @@ func (ec *executionContext) _Character_race(ctx context.Context, field graphql.C
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Race, nil
+		return obj.Race()
 	})
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*int)
+	res := resTmp.(string)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-
-	if res == nil {
-		return graphql.Null
-	}
-	return graphql.MarshalInt(*res)
+	return graphql.MarshalString(res)
 }
 
 // nolint: vetshadow
@@ -2935,19 +2927,15 @@ func (ec *executionContext) _Character_gender(ctx context.Context, field graphql
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Gender, nil
+		return obj.Gender()
 	})
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*int)
+	res := resTmp.(string)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-
-	if res == nil {
-		return graphql.Null
-	}
-	return graphql.MarshalInt(*res)
+	return graphql.MarshalString(res)
 }
 
 // nolint: vetshadow
@@ -3075,19 +3063,15 @@ func (ec *executionContext) _Character_faction(ctx context.Context, field graphq
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Faction, nil
+		return obj.Faction()
 	})
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*int)
+	res := resTmp.(string)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-
-	if res == nil {
-		return graphql.Null
-	}
-	return graphql.MarshalInt(*res)
+	return graphql.MarshalString(res)
 }
 
 // nolint: vetshadow
@@ -11003,14 +10987,14 @@ type Character {
   name: String
   realm: String
   battlegroup: String
-  class: Int
-  race: Int
-  gender: Int
+  class: String
+  race: String
+  gender: String
   level: Int
   achievementPoints: Int
   thumbnail: String
   calcClass: String
-  faction: Int
+  faction: String
   totalHonorableKills: Int
   feed: [CharacterFeedItem]
   pets: CharacterPets

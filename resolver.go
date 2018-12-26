@@ -66,6 +66,22 @@ func (r *queryResolver) Character(ctx context.Context, input CharacterQueryInput
 	return character, nil
 }
 
+func (c *Character) Class() (string, error) {
+	return battlenet.MapClassIDToClassName(*c.ClassID), nil
+}
+
+func (c *Character) Faction() (string, error) {
+	return battlenet.MapFactionIDToFactionName(*c.FactionID), nil
+}
+
+func (c *Character) Gender() (string, error) {
+	return battlenet.MapGenderIDToGenderName(*c.GenderID), nil
+}
+
+func (c *Character) Race() (string, error) {
+	return battlenet.MapRaceIDToRaceName(*c.RaceID), nil
+}
+
 // Feed of character activity
 func (c *Character) Feed() ([]*CharacterFeedItem, error) {
 	var feedItems []CharacterFeedItem

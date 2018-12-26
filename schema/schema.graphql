@@ -272,14 +272,14 @@ type Character {
   name: String
   realm: String
   battlegroup: String
-  class: Int
-  race: Int
-  gender: Int
+  class: String
+  race: String
+  gender: String
   level: Int
   achievementPoints: Int
   thumbnail: String
   calcClass: String
-  faction: Int
+  faction: String
   totalHonorableKills: Int
   feed: [CharacterFeedItem]
   pets: CharacterPets
