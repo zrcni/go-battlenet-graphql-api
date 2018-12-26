@@ -34,8 +34,8 @@ func Fetch(url string, authToken string) ([]byte, error) {
 	return body, nil
 }
 
-// MapRaceIDToRaceName maps ID number to character race name
-func MapRaceIDToRaceName(id int) string {
+// MapRaceIDToName maps ID number to character race name
+func MapRaceIDToName(id int) string {
 	switch id {
 	case 1:
 		fallthrough
@@ -92,8 +92,8 @@ func MapRaceIDToRaceName(id int) string {
 	}
 }
 
-// MapClassIDToClassName maps class ID number to character class name
-func MapClassIDToClassName(id int) string {
+// MapClassIDToName maps class ID number to character class name
+func MapClassIDToName(id int) string {
 	switch id {
 	case 1:
 		return "Warrior"
@@ -124,8 +124,8 @@ func MapClassIDToClassName(id int) string {
 	}
 }
 
-// MapGenderIDToGenderName maps gender ID to character gender name
-func MapGenderIDToGenderName(id int) string {
+// MapGenderIDToName maps gender ID to character gender name
+func MapGenderIDToName(id int) string {
 	switch id {
 	case 0:
 		return "Male"
@@ -136,8 +136,8 @@ func MapGenderIDToGenderName(id int) string {
 	}
 }
 
-// MapFactionIDToFactionName maps faction ID to character faction name
-func MapFactionIDToFactionName(id int) string {
+// MapFactionIDToName maps faction ID to character faction name
+func MapFactionIDToName(id int) string {
 	switch id {
 	case 0:
 		return "Alliance"

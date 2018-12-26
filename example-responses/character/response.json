@@ -3,14 +3,14 @@
 	"name": "Nien",
 	"realm": "Nordrassil",
 	"battlegroup": "Cruelty / Crueldad",
-	"class": 3,
-	"race": 4,
+	"class": "Hunter",
+	"race": "Night Elf",
 	"gender": 1,
 	"level": 120,
 	"achievementPoints": 19295,
 	"thumbnail": "nordrassil/110/130348142-avatar.jpg",
 	"calcClass": "Y",
-	"faction": 0,
+	"faction": "Alliance",
 	"feed": [
 		{
 			"type": "LOOT",

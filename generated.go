@@ -2879,7 +2879,7 @@ func (ec *executionContext) _Character_class(ctx context.Context, field graphql.
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Class()
+		return obj.Class(), nil
 	})
 	if resTmp == nil {
 		return graphql.Null
@@ -2903,7 +2903,7 @@ func (ec *executionContext) _Character_race(ctx context.Context, field graphql.C
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Race()
+		return obj.Race(), nil
 	})
 	if resTmp == nil {
 		return graphql.Null
@@ -2927,7 +2927,7 @@ func (ec *executionContext) _Character_gender(ctx context.Context, field graphql
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Gender()
+		return obj.Gender(), nil
 	})
 	if resTmp == nil {
 		return graphql.Null
@@ -3063,7 +3063,7 @@ func (ec *executionContext) _Character_faction(ctx context.Context, field graphq
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Faction()
+		return obj.Faction(), nil
 	})
 	if resTmp == nil {
 		return graphql.Null
