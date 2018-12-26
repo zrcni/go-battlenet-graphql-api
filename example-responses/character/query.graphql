@@ -13,6 +13,43 @@ query character($input: CharacterQueryInput!) {
     calcClass
     faction
     totalHonorableKills
+    feed {
+      ... on CharacterFeedAchievement {
+        type
+        timestamp
+        achievement {
+          ...Achievement
+        }
+        featOfStrength
+      }
+      ... on CharacterFeedCriteria {
+        type
+        timestamp
+        achievement {
+          ...Achievement
+        }
+      }
+      ... on CharacterFeedLoot {
+        type
+        timestamp
+        itemId
+        context
+        bonusLists
+      }
+      ... on CharacterFeedBossKill {
+        type
+        timestamp
+        achievement {
+          ...Achievement
+        }
+        featOfStrength
+        criteria {
+          ...AchievementCriteria
+        }
+        quantity
+        name
+      }
+    }
     pets {
       numCollected
       numNotCollected
@@ -201,4 +238,24 @@ fragment Profession on Profession {
   rank
   max
   recipes
+}
+
+fragment AchievementCriteria on AchievementCriteria {
+  id
+  description
+  orderIndex
+  max
+}
+
+fragment Achievement on Achievement {
+  id
+  title
+  points
+  description
+  icon
+  criteria {
+    ...AchievementCriteria
+  }
+  accountWide
+  factionId
 }

@@ -1,10 +1,11 @@
-package bnet
+package battlenet
 
 import (
 	"bytes"
 	"context"
 	base64 "encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -60,6 +61,7 @@ func (auth *Auth) Authenticate() error {
 
 	if err != nil {
 		log.Println(err)
+		return err
 	}
 
 	defer res.Body.Close()
@@ -70,11 +72,12 @@ func (auth *Auth) Authenticate() error {
 	if oauthResponse.AccessToken != "" {
 		auth.token = oauthResponse.AccessToken
 		log.Print("Successfully authenticated with bnet!")
-	} else {
-		log.Print("Could not authenticate with bnet!")
+		return nil
 	}
 
-	return nil
+	errorMessage := "Could not authenticate with bnet!"
+	log.Print(errorMessage)
+	return errors.New(errorMessage)
 }
 
 // GetToken returns the token

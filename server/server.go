@@ -4,11 +4,12 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/99designs/gqlgen/handler"
 	"github.com/go-chi/chi"
 	api "github.com/zrcni/go-bnet-graphql-api"
-	"github.com/zrcni/go-bnet-graphql-api/bnet"
+	"github.com/zrcni/go-bnet-graphql-api/battlenet"
 )
 
 const defaultPort = "4000"
@@ -19,10 +20,17 @@ type server struct {
 	router chi.Router
 }
 
+func authenticateBattleNet(battlenetAuth *battlenet.Auth) {
+	if err := battlenetAuth.Authenticate(); err != nil {
+		time.Sleep(time.Second)
+		authenticateBattleNet(battlenetAuth)
+	}
+}
+
 func (s *server) middlewares() {
-	bnetAuth := &bnet.Auth{}
-	go func() { bnetAuth.Authenticate() }()
-	s.router.Use(bnet.Middleware(bnetAuth))
+	battlenetAuth := &battlenet.Auth{}
+	go func() { authenticateBattleNet(battlenetAuth) }()
+	s.router.Use(battlenet.Middleware(battlenetAuth))
 }
 
 func (s *server) routes() {

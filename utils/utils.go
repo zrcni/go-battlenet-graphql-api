@@ -12,26 +12,26 @@ import (
 	"github.com/vektah/gqlparser/ast"
 )
 
-type bnetField struct {
+type battlenetField struct {
 	name  string
 	items []string
 }
 
-// mapFieldToBnetField maps supplied field to a field that is required for the supplied field to be fetched
-func mapFieldToBnetField(field string) string {
-	bnetFields := []bnetField{
-		bnetField{
+// mapFieldToBattleNetField maps supplied field to a field that is required for the supplied field to be fetched
+func mapFieldToBattleNetField(field string) string {
+	battlenetFields := []battlenetField{
+		battlenetField{
 			name:  "items",
 			items: []string{"averageItemLevel", "averageItemLevelEquipped", "items"},
 		},
 	}
 
-	for _, bnetField := range bnetFields {
-		if bnetField.name == "items" {
+	for _, battlenetField := range battlenetFields {
+		if battlenetField.name == "items" {
 
-			for _, item := range bnetField.items {
+			for _, item := range battlenetField.items {
 				if item == field {
-					return bnetField.name
+					return battlenetField.name
 				}
 			}
 
@@ -64,7 +64,7 @@ func fieldNamesToStrings(fields []ast.Field) []string {
 	return strings
 }
 
-func MapFieldsToBnetFields(ctx context.Context) []string {
+func MapFieldsToBattleNetFields(ctx context.Context) []string {
 	requestContext := graphql.GetRequestContext(ctx)
 
 	stringFields := []string{}
@@ -79,16 +79,16 @@ func MapFieldsToBnetFields(ctx context.Context) []string {
 		}
 	}
 
-	bnetFields := []string{}
+	battlenetFields := []string{}
 
 	for _, field := range stringFields {
-		bnf := mapFieldToBnetField(field)
-		if !stringContains(bnetFields, bnf) {
-			bnetFields = append(bnetFields, bnf)
+		bnf := mapFieldToBattleNetField(field)
+		if !stringContains(battlenetFields, bnf) {
+			battlenetFields = append(battlenetFields, bnf)
 		}
 	}
 
-	return bnetFields
+	return battlenetFields
 }
 
 // WriteResponseBodyToJSONFile writes to a JSON file in the project root

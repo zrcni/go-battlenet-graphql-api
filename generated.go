@@ -3131,7 +3131,7 @@ func (ec *executionContext) _Character_feed(ctx context.Context, field graphql.C
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Feed, nil
+		return obj.Feed()
 	})
 	if resTmp == nil {
 		return graphql.Null

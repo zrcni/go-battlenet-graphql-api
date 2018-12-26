@@ -26,24 +26,25 @@ type CharacterItems struct {
 
 // Character represents JSON response from the Battle.net API
 type Character struct {
-	LastModified        *int                  `json:"lastModified"`
-	Name                *string               `json:"name"`
-	Realm               *string               `json:"realm"`
-	Battlegroup         *string               `json:"battlegroup"`
-	Class               *int                  `json:"class"`
-	Race                *int                  `json:"race"`
-	Gender              *int                  `json:"gender"`
-	Level               *int                  `json:"level"`
-	AchievementPoints   *int                  `json:"achievementPoints"`
-	Thumbnail           *string               `json:"thumbnail"`
-	CalcClass           *string               `json:"calcClass"`
-	Faction             *int                  `json:"faction"`
-	TotalHonorableKills *int                  `json:"totalHonorableKills"`
-	Feed                []*CharacterFeedItem  `json:"feed"`
-	Pets                *CharacterPets        `json:"pets"`
-	Mounts              *CharacterMounts      `json:"mounts"`
-	Items               *CharacterItems       `json:"items"`
-	Professions         *CharacterProfessions `json:"professions"`
-	Reputation          []*Reputation         `json:"reputation"`
-	Stats               *CharacterStats       `json:"stats"`
+	LastModified        *int    `json:"lastModified"`
+	Name                *string `json:"name"`
+	Realm               *string `json:"realm"`
+	Battlegroup         *string `json:"battlegroup"`
+	Class               *int    `json:"class"`
+	Race                *int    `json:"race"`
+	Gender              *int    `json:"gender"`
+	Level               *int    `json:"level"`
+	AchievementPoints   *int    `json:"achievementPoints"`
+	Thumbnail           *string `json:"thumbnail"`
+	CalcClass           *string `json:"calcClass"`
+	Faction             *int    `json:"faction"`
+	TotalHonorableKills *int    `json:"totalHonorableKills"`
+	// Used when unmarshaling JSON response into a struct in Feed resolver
+	TempFeed    []map[string]interface{} `json:"feed"`
+	Pets        *CharacterPets           `json:"pets"`
+	Mounts      *CharacterMounts         `json:"mounts"`
+	Items       *CharacterItems          `json:"items"`
+	Professions *CharacterProfessions    `json:"professions"`
+	Reputation  []*Reputation            `json:"reputation"`
+	Stats       *CharacterStats          `json:"stats"`
 }

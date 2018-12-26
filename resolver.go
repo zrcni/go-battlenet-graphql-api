@@ -6,12 +6,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
-	"net/http"
 	"strings"
 
-	"github.com/zrcni/go-bnet-graphql-api/bnet"
+	"github.com/zrcni/go-bnet-graphql-api/battlenet"
 	"github.com/zrcni/go-bnet-graphql-api/utils"
 )
 
@@ -19,11 +17,22 @@ type contextKey struct {
 	name string
 }
 
-func makeURL(input CharacterQueryInput, ctx context.Context) string {
-	bnetFields := utils.MapFieldsToBnetFields(ctx)
-	fields := strings.Join(bnetFields, "%2C")
+func makeBaseURL(region string) string {
+	if region != "" {
+		if region == "cn" {
+			return "gateway.battlenet.com.cn"
+		}
+		return fmt.Sprintf("%s.api.blizzard.com", region)
+	}
+	return `eu.api.blizzard.com`
+}
 
-	return fmt.Sprintf("https://eu.api.blizzard.com/wow/character/%s/%s?fields=%s", "Nordrassil", "Nien", fields)
+func makeURL(ctx context.Context, input CharacterQueryInput) string {
+	battlenetFields := utils.MapFieldsToBattleNetFields(ctx)
+	fields := strings.Join(battlenetFields, "%2C")
+	baseURL := makeBaseURL(input.Region)
+
+	return fmt.Sprintf("https://%s/wow/character/%s/%s?fields=%s", baseURL, input.Realm, input.Name, fields)
 }
 
 type Resolver struct{}
@@ -35,42 +44,56 @@ func (r *Resolver) Query() QueryResolver {
 type queryResolver struct{ *Resolver }
 
 func (r *queryResolver) Character(ctx context.Context, input CharacterQueryInput) (*Character, error) {
-	url := makeURL(input, ctx)
+	url := makeURL(ctx, input)
 
-	req, err := http.NewRequest("GET", url, nil)
+	battlenetAuth := battlenet.GetAuthFromContext(ctx)
+	authToken := battlenetAuth.GetToken()
+
+	body, err := battlenet.Fetch(url, authToken)
 	if err != nil {
-		log.Println(err)
+		log.Printf("Get.queryBattleNet: %v", err)
 		return nil, err
 	}
-
-	bnetAuth := bnet.GetAuthFromContext(ctx)
-	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", bnetAuth.GetToken()))
-
-	client := &http.Client{}
-
-	res, err := client.Do(req)
-	if err != nil {
-		log.Println(err)
-		return nil, err
-	}
-
-	body, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		log.Println(err)
-		return nil, err
-	}
-
-	utils.WriteResponseBodyToJSONFile(body, "tmpcharacter")
+	// utils.WriteResponseBodyToJSONFile(body, "tmpcharacter")
 
 	character := &Character{}
 
-	err = json.Unmarshal(body, character)
-	if err != nil {
-		log.Println("Character response unmarshal:", err)
+	if err := json.Unmarshal(body, character); err != nil {
+		log.Printf("Character response unmarshal: %v", err)
 		return nil, err
 	}
 
 	return character, nil
+}
+
+// Feed of character activity
+func (c *Character) Feed() ([]*CharacterFeedItem, error) {
+	var feedItems []CharacterFeedItem
+
+	for _, feedItem := range c.TempFeed {
+		switch feedItem["type"] {
+		case "LOOT":
+			i := &CharacterFeedLoot{}
+			mapDataToInterface(feedItem, i)
+			feedItems = append(feedItems, i)
+		case "BOSSKILL":
+			i := &CharacterFeedBossKill{}
+			mapDataToInterface(feedItem, i)
+			feedItems = append(feedItems, i)
+		case "CRITERIA":
+			i := &CharacterFeedCriteria{}
+			mapDataToInterface(feedItem, i)
+			feedItems = append(feedItems, i)
+		case "ACHIEVEMENT":
+			i := &CharacterFeedAchievement{}
+			mapDataToInterface(feedItem, i)
+			feedItems = append(feedItems, i)
+		}
+	}
+
+	validFeedItems := mapItemsToValidType(feedItems)
+
+	return validFeedItems, nil
 }
 
 // AverageItemLevel maps to JSON field items.averageItemLevelEquipped
@@ -81,4 +104,25 @@ func (c *Character) AverageItemLevel() *int {
 // AverageItemLevelInBags maps to JSON field items.averageItemLevel
 func (c *Character) AverageItemLevelInBags() *int {
 	return c.Items.AverageItemLevel
+}
+
+func mapDataToInterface(m map[string]interface{}, i interface{}) {
+	item, err := json.Marshal(m)
+	if err != nil {
+		log.Printf("mapDataToInterface marshal: %v", err)
+	}
+
+	if err := json.Unmarshal(item, i); err != nil {
+		log.Printf("mapDataToInterface unmarshal:", err)
+	}
+}
+
+func mapItemsToValidType(items []CharacterFeedItem) []*CharacterFeedItem {
+	var validFeedItems []*CharacterFeedItem
+
+	for _, itm := range items {
+		validFeedItems = append(validFeedItems, &itm)
+	}
+
+	return validFeedItems
 }
