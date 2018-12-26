@@ -100,7 +100,7 @@ func WriteResponseBodyToJSONFile(body []byte, filename string) {
 		log.Println("PrettyPrint error:", err)
 	}
 
-	projectPath := "/home/smappa/go/src/github.com/zrcni/go-bnet-graphql-api"
+	projectPath := "/home/smappa/go/src/github.com/zrcni/go-battlenet-graphql-api"
 
 	// if err := os.Mkdir(fmt.Sprintf("%s/example-responses/%s", projectPath, filename), 0644); err != nil {
 	// 	log.Println(err)

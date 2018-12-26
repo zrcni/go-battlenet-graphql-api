@@ -13,9 +13,9 @@ model:
 
 models:
   Character:
-    model: github.com/zrcni/go-bnet-graphql-api.Character
+    model: github.com/zrcni/go-battlenet-graphql-api.Character
   CharacterItems:
-    model: github.com/zrcni/go-bnet-graphql-api.CharacterItems
+    model: github.com/zrcni/go-battlenet-graphql-api.CharacterItems
 
 resolver:
   filename: resolver.go

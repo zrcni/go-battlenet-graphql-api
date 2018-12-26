@@ -8,8 +8,8 @@ import (
 
 	"github.com/99designs/gqlgen/handler"
 	"github.com/go-chi/chi"
-	api "github.com/zrcni/go-bnet-graphql-api"
-	"github.com/zrcni/go-bnet-graphql-api/battlenet"
+	api "github.com/zrcni/go-battlenet-graphql-api"
+	"github.com/zrcni/go-battlenet-graphql-api/battlenet"
 )
 
 const defaultPort = "4000"

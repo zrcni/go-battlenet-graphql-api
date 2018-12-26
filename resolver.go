@@ -9,8 +9,8 @@ import (
 	"log"
 	"strings"
 
-	"github.com/zrcni/go-bnet-graphql-api/battlenet"
-	"github.com/zrcni/go-bnet-graphql-api/utils"
+	"github.com/zrcni/go-battlenet-graphql-api/battlenet"
+	"github.com/zrcni/go-battlenet-graphql-api/utils"
 )
 
 type contextKey struct {
