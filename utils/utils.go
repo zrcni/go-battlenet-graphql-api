@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"net/http"
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/vektah/gqlparser/ast"
@@ -122,4 +123,29 @@ func stringContains(slice []string, element string) bool {
 		}
 	}
 	return false
+}
+
+// Fetch makes a GET request and returns the body
+func Fetch(url string) ([]byte, error) {
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		log.Printf("new request: %v", err)
+		return nil, err
+	}
+
+	client := &http.Client{}
+
+	res, err := client.Do(req)
+	if err != nil {
+		log.Printf("do request: %v", err)
+		return nil, err
+	}
+
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		log.Printf("read body: %v", err)
+		return nil, err
+	}
+
+	return body, nil
 }

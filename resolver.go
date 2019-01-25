@@ -9,6 +9,7 @@ import (
 	"log"
 	"strings"
 
+	"github.com/mitchellh/mapstructure"
 	"github.com/zrcni/go-battlenet-graphql-api/battlenet"
 	"github.com/zrcni/go-battlenet-graphql-api/utils"
 )
@@ -66,6 +67,66 @@ func (r *queryResolver) Character(ctx context.Context, input CharacterQueryInput
 	return character, nil
 }
 
+func (r *queryResolver) Mounts(ctx context.Context, searchTerm string) ([]*Mount, error) {
+	mountSearchURL := fmt.Sprintf("http://localhost:9200/mounts/_search?q=name:%s", searchTerm)
+
+	body, err := utils.Fetch(mountSearchURL)
+	if err != nil {
+		return nil, err
+	}
+
+	var data map[string]interface{}
+
+	err = json.Unmarshal(body, &data)
+	if err != nil {
+		return nil, err
+	}
+
+	var mountHits []ElasticSearchMountHit
+
+	m, ok := data["hits"].(map[string]interface{})
+	if !ok {
+		return nil, nil
+	}
+
+	err = mapstructure.Decode(m["hits"], &mountHits)
+	if err != nil {
+		return nil, err
+	}
+
+	// []Mount into []*Mount
+	var mounts []*Mount
+	for _, hit := range mountHits {
+		var mount Mount
+		mapstructure.Decode(hit.Source, &mount)
+		mounts = append(mounts, &mount)
+	}
+
+	return mounts, nil
+}
+
+func (m *Mount) Icons() *Icons {
+	smallIcon := fmt.Sprintf("https://wow.zamimg.com/images/wow/icons/small/%s.jpg", *m.Icon)
+	mediumIcon := fmt.Sprintf("https://wow.zamimg.com/images/wow/icons/medium/%s.jpg", *m.Icon)
+	largeIcon := fmt.Sprintf("https://wow.zamimg.com/images/wow/icons/large/%s.jpg", *m.Icon)
+
+	return &Icons{
+		Small:  &smallIcon,
+		Medium: &mediumIcon,
+		Large:  &largeIcon,
+	}
+}
+
+func (m *Mount) WowheadURL() *string {
+	if *m.ItemID == 0 {
+		spellURL := fmt.Sprintf("https://www.wowhead.com/spell=%v", *m.SpellID)
+		return &spellURL
+	}
+
+	itemURL := fmt.Sprintf("https://www.wowhead.com/item=%v", *m.ItemID)
+	return &itemURL
+}
+
 func (c *Character) Class() string {
 	return battlenet.MapClassIDToName(*c.ClassID)
 }
@@ -92,14 +153,17 @@ func (c *Character) Feed() ([]*CharacterFeedItem, error) {
 			i := &CharacterFeedLoot{}
 			mapDataToInterface(feedItem, i)
 			feedItems = append(feedItems, i)
+
 		case "BOSSKILL":
 			i := &CharacterFeedBossKill{}
 			mapDataToInterface(feedItem, i)
 			feedItems = append(feedItems, i)
+
 		case "CRITERIA":
 			i := &CharacterFeedCriteria{}
 			mapDataToInterface(feedItem, i)
 			feedItems = append(feedItems, i)
+
 		case "ACHIEVEMENT":
 			i := &CharacterFeedAchievement{}
 			mapDataToInterface(feedItem, i)
@@ -120,25 +184,4 @@ func (c *Character) AverageItemLevel() *int {
 // AverageItemLevelInBags maps to JSON field items.averageItemLevel
 func (c *Character) AverageItemLevelInBags() *int {
 	return c.Items.AverageItemLevel
-}
-
-func mapDataToInterface(m map[string]interface{}, i interface{}) {
-	item, err := json.Marshal(m)
-	if err != nil {
-		log.Printf("mapDataToInterface marshal: %v", err)
-	}
-
-	if err := json.Unmarshal(item, i); err != nil {
-		log.Printf("mapDataToInterface unmarshal:", err)
-	}
-}
-
-func mapItemsToValidType(items []CharacterFeedItem) []*CharacterFeedItem {
-	var validFeedItems []*CharacterFeedItem
-
-	for _, itm := range items {
-		validFeedItems = append(validFeedItems, &itm)
-	}
-
-	return validFeedItems
 }

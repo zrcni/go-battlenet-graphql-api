@@ -8,6 +8,7 @@ import (
 
 	"github.com/99designs/gqlgen/handler"
 	"github.com/go-chi/chi"
+	"github.com/rs/cors"
 	api "github.com/zrcni/go-battlenet-graphql-api"
 	"github.com/zrcni/go-battlenet-graphql-api/battlenet"
 )
@@ -31,12 +32,15 @@ func (s *server) middlewares() {
 	battlenetAuth := &battlenet.Auth{}
 	go func() { authenticateBattleNet(battlenetAuth) }()
 	s.router.Use(battlenet.Middleware(battlenetAuth))
+	s.router.Use(cors.New(cors.Options{
+		AllowedOrigins:   []string{"*"},
+		AllowCredentials: true,
+	}).Handler)
 }
 
 func (s *server) routes() {
 	s.router.Get("/", handler.Playground("GraphQL playground", "/query"))
 	s.router.Post("/query", handler.GraphQL(api.NewExecutableSchema(api.Config{Resolvers: &api.Resolver{}})))
-
 }
 
 func (s *server) listen() {

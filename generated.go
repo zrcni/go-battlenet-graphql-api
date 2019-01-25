@@ -220,6 +220,12 @@ type ComplexityRoot struct {
 		RangedDps                   func(childComplexity int) int
 	}
 
+	Icons struct {
+		Small  func(childComplexity int) int
+		Medium func(childComplexity int) int
+		Large  func(childComplexity int) int
+	}
+
 	Item struct {
 		Id                   func(childComplexity int) int
 		Name                 func(childComplexity int) int
@@ -260,8 +266,9 @@ type ComplexityRoot struct {
 		SpellId    func(childComplexity int) int
 		CreatureId func(childComplexity int) int
 		ItemId     func(childComplexity int) int
+		WowheadUrl func(childComplexity int) int
 		QualityId  func(childComplexity int) int
-		Icon       func(childComplexity int) int
+		Icons      func(childComplexity int) int
 		IsGround   func(childComplexity int) int
 		IsFlying   func(childComplexity int) int
 		IsAquatic  func(childComplexity int) int
@@ -306,6 +313,7 @@ type ComplexityRoot struct {
 
 	Query struct {
 		Character func(childComplexity int, input CharacterQueryInput) int
+		Mounts    func(childComplexity int, searchTerm string) int
 	}
 
 	Reputation struct {
@@ -325,6 +333,7 @@ type ComplexityRoot struct {
 
 type QueryResolver interface {
 	Character(ctx context.Context, input CharacterQueryInput) (*Character, error)
+	Mounts(ctx context.Context, searchTerm string) ([]*Mount, error)
 }
 
 func field_Query_character_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
@@ -338,6 +347,21 @@ func field_Query_character_args(rawArgs map[string]interface{}) (map[string]inte
 		}
 	}
 	args["input"] = arg0
+	return args, nil
+
+}
+
+func field_Query_mounts_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["searchTerm"]; ok {
+		var err error
+		arg0, err = graphql.UnmarshalString(tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["searchTerm"] = arg0
 	return args, nil
 
 }
@@ -1352,6 +1376,27 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.CharacterStats.RangedDps(childComplexity), true
 
+	case "Icons.small":
+		if e.complexity.Icons.Small == nil {
+			break
+		}
+
+		return e.complexity.Icons.Small(childComplexity), true
+
+	case "Icons.medium":
+		if e.complexity.Icons.Medium == nil {
+			break
+		}
+
+		return e.complexity.Icons.Medium(childComplexity), true
+
+	case "Icons.large":
+		if e.complexity.Icons.Large == nil {
+			break
+		}
+
+		return e.complexity.Icons.Large(childComplexity), true
+
 	case "Item.id":
 		if e.complexity.Item.Id == nil {
 			break
@@ -1562,6 +1607,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mount.ItemId(childComplexity), true
 
+	case "Mount.wowheadURL":
+		if e.complexity.Mount.WowheadUrl == nil {
+			break
+		}
+
+		return e.complexity.Mount.WowheadUrl(childComplexity), true
+
 	case "Mount.qualityId":
 		if e.complexity.Mount.QualityId == nil {
 			break
@@ -1569,12 +1621,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mount.QualityId(childComplexity), true
 
-	case "Mount.icon":
-		if e.complexity.Mount.Icon == nil {
+	case "Mount.icons":
+		if e.complexity.Mount.Icons == nil {
 			break
 		}
 
-		return e.complexity.Mount.Icon(childComplexity), true
+		return e.complexity.Mount.Icons(childComplexity), true
 
 	case "Mount.isGround":
 		if e.complexity.Mount.IsGround == nil {
@@ -1804,6 +1856,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.Character(childComplexity, args["input"].(CharacterQueryInput)), true
+
+	case "Query.mounts":
+		if e.complexity.Query.Mounts == nil {
+			break
+		}
+
+		args, err := field_Query_mounts_args(rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Mounts(childComplexity, args["searchTerm"].(string)), true
 
 	case "Reputation.id":
 		if e.complexity.Reputation.Id == nil {
@@ -4796,7 +4860,7 @@ func (ec *executionContext) _CharacterMounts_collected(ctx context.Context, fiel
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.([]*Pet)
+	res := resTmp.([]*Mount)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
 
@@ -4825,7 +4889,7 @@ func (ec *executionContext) _CharacterMounts_collected(ctx context.Context, fiel
 					return graphql.Null
 				}
 
-				return ec._Pet(ctx, field.Selections, res[idx1])
+				return ec._Mount(ctx, field.Selections, res[idx1])
 			}()
 		}
 		if isLen1 {
@@ -6633,6 +6697,121 @@ func (ec *executionContext) _CharacterStats_rangedDps(ctx context.Context, field
 	return graphql.MarshalFloat(*res)
 }
 
+var iconsImplementors = []string{"Icons"}
+
+// nolint: gocyclo, errcheck, gas, goconst
+func (ec *executionContext) _Icons(ctx context.Context, sel ast.SelectionSet, obj *Icons) graphql.Marshaler {
+	fields := graphql.CollectFields(ctx, sel, iconsImplementors)
+
+	out := graphql.NewOrderedMap(len(fields))
+	invalid := false
+	for i, field := range fields {
+		out.Keys[i] = field.Alias
+
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Icons")
+		case "small":
+			out.Values[i] = ec._Icons_small(ctx, field, obj)
+		case "medium":
+			out.Values[i] = ec._Icons_medium(ctx, field, obj)
+		case "large":
+			out.Values[i] = ec._Icons_large(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+
+	if invalid {
+		return graphql.Null
+	}
+	return out
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Icons_small(ctx context.Context, field graphql.CollectedField, obj *Icons) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Icons",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Small, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+
+	if res == nil {
+		return graphql.Null
+	}
+	return graphql.MarshalString(*res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Icons_medium(ctx context.Context, field graphql.CollectedField, obj *Icons) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Icons",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Medium, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+
+	if res == nil {
+		return graphql.Null
+	}
+	return graphql.MarshalString(*res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Icons_large(ctx context.Context, field graphql.CollectedField, obj *Icons) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Icons",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Large, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+
+	if res == nil {
+		return graphql.Null
+	}
+	return graphql.MarshalString(*res)
+}
+
 var itemImplementors = []string{"Item"}
 
 // nolint: gocyclo, errcheck, gas, goconst
@@ -7556,10 +7735,12 @@ func (ec *executionContext) _Mount(ctx context.Context, sel ast.SelectionSet, ob
 			out.Values[i] = ec._Mount_creatureId(ctx, field, obj)
 		case "itemId":
 			out.Values[i] = ec._Mount_itemId(ctx, field, obj)
+		case "wowheadURL":
+			out.Values[i] = ec._Mount_wowheadURL(ctx, field, obj)
 		case "qualityId":
 			out.Values[i] = ec._Mount_qualityId(ctx, field, obj)
-		case "icon":
-			out.Values[i] = ec._Mount_icon(ctx, field, obj)
+		case "icons":
+			out.Values[i] = ec._Mount_icons(ctx, field, obj)
 		case "isGround":
 			out.Values[i] = ec._Mount_isGround(ctx, field, obj)
 		case "isFlying":
@@ -7692,6 +7873,34 @@ func (ec *executionContext) _Mount_itemId(ctx context.Context, field graphql.Col
 }
 
 // nolint: vetshadow
+func (ec *executionContext) _Mount_wowheadURL(ctx context.Context, field graphql.CollectedField, obj *Mount) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Mount",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.WowheadURL(), nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+
+	if res == nil {
+		return graphql.Null
+	}
+	return graphql.MarshalString(*res)
+}
+
+// nolint: vetshadow
 func (ec *executionContext) _Mount_qualityId(ctx context.Context, field graphql.CollectedField, obj *Mount) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
@@ -7720,7 +7929,7 @@ func (ec *executionContext) _Mount_qualityId(ctx context.Context, field graphql.
 }
 
 // nolint: vetshadow
-func (ec *executionContext) _Mount_icon(ctx context.Context, field graphql.CollectedField, obj *Mount) graphql.Marshaler {
+func (ec *executionContext) _Mount_icons(ctx context.Context, field graphql.CollectedField, obj *Mount) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -7732,19 +7941,20 @@ func (ec *executionContext) _Mount_icon(ctx context.Context, field graphql.Colle
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Icon, nil
+		return obj.Icons(), nil
 	})
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(*Icons)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
 
 	if res == nil {
 		return graphql.Null
 	}
-	return graphql.MarshalString(*res)
+
+	return ec._Icons(ctx, field.Selections, res)
 }
 
 // nolint: vetshadow
@@ -8779,6 +8989,15 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				out.Values[i] = ec._Query_character(ctx, field)
 				wg.Done()
 			}(i, field)
+		case "mounts":
+			wg.Add(1)
+			go func(i int, field graphql.CollectedField) {
+				out.Values[i] = ec._Query_mounts(ctx, field)
+				if out.Values[i] == graphql.Null {
+					invalid = true
+				}
+				wg.Done()
+			}(i, field)
 		case "__type":
 			out.Values[i] = ec._Query___type(ctx, field)
 		case "__schema":
@@ -8827,6 +9046,76 @@ func (ec *executionContext) _Query_character(ctx context.Context, field graphql.
 	}
 
 	return ec._Character(ctx, field.Selections, res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Query_mounts(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := field_Query_mounts_args(rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	rctx := &graphql.ResolverContext{
+		Object: "Query",
+		Args:   args,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Mounts(rctx, args["searchTerm"].(string))
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*Mount)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+
+	arr1 := make(graphql.Array, len(res))
+	var wg sync.WaitGroup
+
+	isLen1 := len(res) == 1
+	if !isLen1 {
+		wg.Add(len(res))
+	}
+
+	for idx1 := range res {
+		idx1 := idx1
+		rctx := &graphql.ResolverContext{
+			Index:  &idx1,
+			Result: res[idx1],
+		}
+		ctx := graphql.WithResolverContext(ctx, rctx)
+		f := func(idx1 int) {
+			if !isLen1 {
+				defer wg.Done()
+			}
+			arr1[idx1] = func() graphql.Marshaler {
+
+				if res[idx1] == nil {
+					return graphql.Null
+				}
+
+				return ec._Mount(ctx, field.Selections, res[idx1])
+			}()
+		}
+		if isLen1 {
+			f(idx1)
+		} else {
+			go f(idx1)
+		}
+
+	}
+	wg.Wait()
+	return arr1
 }
 
 // nolint: vetshadow
@@ -10810,13 +11099,20 @@ type CharacterPets {
   collected: [Pet]
 }
 
+type Icons {
+  small: String
+  medium: String
+  large: String
+}
+
 type Mount {
   name: String
   spellId: Int
   creatureId: Int
   itemId: Int
+  wowheadURL: String
   qualityId: Int
-  icon: String
+  icons: Icons
   isGround: Boolean
   isFlying: Boolean
   isAquatic: Boolean
@@ -10826,7 +11122,7 @@ type Mount {
 type CharacterMounts {
   numCollected: Int
   numNotCollected: Int
-  collected: [Pet]
+  collected: [Mount]
 }
 
 type ItemTooltipParams {
@@ -11015,6 +11311,7 @@ input CharacterQueryInput {
 
 type Query {
   character(input: CharacterQueryInput!): Character
+  mounts(searchTerm: String!): [Mount]!
 }
 `},
 )

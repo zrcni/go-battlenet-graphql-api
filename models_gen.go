@@ -87,9 +87,9 @@ type CharacterFeedLoot struct {
 func (CharacterFeedLoot) IsCharacterFeedItem() {}
 
 type CharacterMounts struct {
-	NumCollected    *int   `json:"numCollected"`
-	NumNotCollected *int   `json:"numNotCollected"`
-	Collected       []*Pet `json:"collected"`
+	NumCollected    *int     `json:"numCollected"`
+	NumNotCollected *int     `json:"numNotCollected"`
+	Collected       []*Mount `json:"collected"`
 }
 
 type CharacterPets struct {
@@ -161,6 +161,12 @@ type CharacterStats struct {
 	RangedDps                   *float64 `json:"rangedDps"`
 }
 
+type Icons struct {
+	Small  *string `json:"small"`
+	Medium *string `json:"medium"`
+	Large  *string `json:"large"`
+}
+
 type Item struct {
 	ID                   *int                  `json:"id"`
 	Name                 *string               `json:"name"`
@@ -194,19 +200,6 @@ type ItemTooltipParams struct {
 	AzeritePower3     *int `json:"azeritePower3"`
 	AzeritePower4     *int `json:"azeritePower4"`
 	AzeritePowerLevel *int `json:"azeritePowerLevel"`
-}
-
-type Mount struct {
-	Name       *string `json:"name"`
-	SpellID    *int    `json:"spellId"`
-	CreatureID *int    `json:"creatureId"`
-	ItemID     *int    `json:"itemId"`
-	QualityID  *int    `json:"qualityId"`
-	Icon       *string `json:"icon"`
-	IsGround   *bool   `json:"isGround"`
-	IsFlying   *bool   `json:"isFlying"`
-	IsAquatic  *bool   `json:"isAquatic"`
-	IsJumping  *bool   `json:"isJumping"`
 }
 
 type Pet struct {

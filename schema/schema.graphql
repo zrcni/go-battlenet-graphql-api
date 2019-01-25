@@ -95,13 +95,20 @@ type CharacterPets {
   collected: [Pet]
 }
 
+type Icons {
+  small: String
+  medium: String
+  large: String
+}
+
 type Mount {
   name: String
   spellId: Int
   creatureId: Int
   itemId: Int
+  wowheadURL: String
   qualityId: Int
-  icon: String
+  icons: Icons
   isGround: Boolean
   isFlying: Boolean
   isAquatic: Boolean
@@ -111,7 +118,7 @@ type Mount {
 type CharacterMounts {
   numCollected: Int
   numNotCollected: Int
-  collected: [Pet]
+  collected: [Mount]
 }
 
 type ItemTooltipParams {
@@ -300,4 +307,5 @@ input CharacterQueryInput {
 
 type Query {
   character(input: CharacterQueryInput!): Character
+  mounts(searchTerm: String!): [Mount]!
 }
