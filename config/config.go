@@ -1,4 +1,4 @@
-package api
+package config
 
 import (
 	"log"
@@ -6,8 +6,12 @@ import (
 	"github.com/joho/godotenv"
 )
 
-// SetupEnv Sets environment variables from .env file
-func SetupEnv() {
+func Setup() {
+	setupEnv()
+}
+
+// setupEnv Sets environment variables from .env file
+func setupEnv() {
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env file")

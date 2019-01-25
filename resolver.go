@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"os"
 	"strings"
 
 	"github.com/mitchellh/mapstructure"
@@ -68,7 +69,9 @@ func (r *queryResolver) Character(ctx context.Context, input CharacterQueryInput
 }
 
 func (r *queryResolver) Mounts(ctx context.Context, searchTerm string) ([]*Mount, error) {
-	mountSearchURL := fmt.Sprintf("http://localhost:9200/mounts/_search?q=name:%s", searchTerm)
+	URL := os.Getenv("ELASTICSEARCH_URL")
+	port := os.Getenv("ELASTICSEARCH_PORT")
+	mountSearchURL := fmt.Sprintf("http://%s:%v/mounts/_search?q=name:%s", URL, port, searchTerm)
 
 	body, err := utils.Fetch(mountSearchURL)
 	if err != nil {

@@ -11,6 +11,7 @@ import (
 	"github.com/rs/cors"
 	api "github.com/zrcni/go-battlenet-graphql-api"
 	"github.com/zrcni/go-battlenet-graphql-api/battlenet"
+	"github.com/zrcni/go-battlenet-graphql-api/config"
 )
 
 const defaultPort = "4000"
@@ -61,7 +62,7 @@ func (s *server) Serve() {
 }
 
 func init() {
-	api.SetupEnv()
+	config.Setup()
 }
 
 func main() {
