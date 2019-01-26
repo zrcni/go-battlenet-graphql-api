@@ -305,7 +305,19 @@ input CharacterQueryInput {
   region: String!
 }
 
+enum SearchType {
+  FUZZY
+  REGEXP
+  WILDCARD
+  NORMAL
+}
+
+input SearchInput {
+  type: SearchType
+  term: String
+}
+
 type Query {
   character(input: CharacterQueryInput!): Character
-  mounts(searchTerm: String!): [Mount]!
+  mounts(input: SearchInput!): [Mount]!
 }

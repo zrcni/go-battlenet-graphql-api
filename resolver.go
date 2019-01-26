@@ -7,11 +7,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"os"
+	"reflect"
 	"strings"
 
-	"github.com/mitchellh/mapstructure"
+	"github.com/olivere/elastic"
 	"github.com/zrcni/go-battlenet-graphql-api/battlenet"
+	"github.com/zrcni/go-battlenet-graphql-api/elasticsearch"
 	"github.com/zrcni/go-battlenet-graphql-api/utils"
 )
 
@@ -68,41 +69,36 @@ func (r *queryResolver) Character(ctx context.Context, input CharacterQueryInput
 	return character, nil
 }
 
-func (r *queryResolver) Mounts(ctx context.Context, searchTerm string) ([]*Mount, error) {
-	URL := os.Getenv("ELASTICSEARCH_URL")
-	port := os.Getenv("ELASTICSEARCH_PORT")
-	mountSearchURL := fmt.Sprintf("http://%s:%v/mounts/_search?q=name:%s", URL, port, searchTerm)
+func (r *queryResolver) Mounts(ctx context.Context, input SearchInput) ([]*Mount, error) {
+	var query elastic.Query
 
-	body, err := utils.Fetch(mountSearchURL)
+	if input.Type != nil {
+		switch *input.Type {
+		case SearchTypeFuzzy:
+			query = elastic.NewFuzzyQuery("name", *input.Term).Boost(1).Fuzziness(2)
+		case SearchTypeRegexp:
+			query = elastic.NewRegexpQuery("name", *input.Term)
+		case SearchTypeWildcard:
+			query = elastic.NewWildcardQuery("name", *input.Term)
+		case SearchTypeNormal:
+			fallthrough
+		default:
+			query = elastic.NewTermQuery("name", *input.Term)
+		}
+	} else {
+		query = elastic.NewTermQuery("name", *input.Term)
+	}
+
+	searchResult, err := elasticsearch.Client.Search().Index("mounts").Query(query).Do(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	var data map[string]interface{}
-
-	err = json.Unmarshal(body, &data)
-	if err != nil {
-		return nil, err
-	}
-
-	var mountHits []ElasticSearchMountHit
-
-	m, ok := data["hits"].(map[string]interface{})
-	if !ok {
-		return nil, nil
-	}
-
-	err = mapstructure.Decode(m["hits"], &mountHits)
-	if err != nil {
-		return nil, err
-	}
-
-	// []Mount into []*Mount
 	var mounts []*Mount
-	for _, hit := range mountHits {
-		var mount Mount
-		mapstructure.Decode(hit.Source, &mount)
-		mounts = append(mounts, &mount)
+	var mountType Mount
+	for _, item := range searchResult.Each(reflect.TypeOf(mountType)) {
+		m := item.(Mount)
+		mounts = append(mounts, &m)
 	}
 
 	return mounts, nil

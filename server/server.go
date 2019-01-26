@@ -12,6 +12,7 @@ import (
 	api "github.com/zrcni/go-battlenet-graphql-api"
 	"github.com/zrcni/go-battlenet-graphql-api/battlenet"
 	"github.com/zrcni/go-battlenet-graphql-api/config"
+	"github.com/zrcni/go-battlenet-graphql-api/elasticsearch"
 )
 
 const defaultPort = "4000"
@@ -66,5 +67,6 @@ func init() {
 }
 
 func main() {
+	elasticsearch.Setup()
 	srv.Serve()
 }

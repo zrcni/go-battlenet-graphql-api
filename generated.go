@@ -313,7 +313,7 @@ type ComplexityRoot struct {
 
 	Query struct {
 		Character func(childComplexity int, input CharacterQueryInput) int
-		Mounts    func(childComplexity int, searchTerm string) int
+		Mounts    func(childComplexity int, input SearchInput) int
 	}
 
 	Reputation struct {
@@ -333,7 +333,7 @@ type ComplexityRoot struct {
 
 type QueryResolver interface {
 	Character(ctx context.Context, input CharacterQueryInput) (*Character, error)
-	Mounts(ctx context.Context, searchTerm string) ([]*Mount, error)
+	Mounts(ctx context.Context, input SearchInput) ([]*Mount, error)
 }
 
 func field_Query_character_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
@@ -353,15 +353,15 @@ func field_Query_character_args(rawArgs map[string]interface{}) (map[string]inte
 
 func field_Query_mounts_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["searchTerm"]; ok {
+	var arg0 SearchInput
+	if tmp, ok := rawArgs["input"]; ok {
 		var err error
-		arg0, err = graphql.UnmarshalString(tmp)
+		arg0, err = UnmarshalSearchInput(tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["searchTerm"] = arg0
+	args["input"] = arg0
 	return args, nil
 
 }
@@ -1867,7 +1867,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Mounts(childComplexity, args["searchTerm"].(string)), true
+		return e.complexity.Query.Mounts(childComplexity, args["input"].(SearchInput)), true
 
 	case "Reputation.id":
 		if e.complexity.Reputation.Id == nil {
@@ -9067,7 +9067,7 @@ func (ec *executionContext) _Query_mounts(ctx context.Context, field graphql.Col
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Mounts(rctx, args["searchTerm"].(string))
+		return ec.resolvers.Query().Mounts(rctx, args["input"].(SearchInput))
 	})
 	if resTmp == nil {
 		if !ec.HasError(rctx) {
@@ -10972,6 +10972,40 @@ func UnmarshalCharacterQueryInput(v interface{}) (CharacterQueryInput, error) {
 	return it, nil
 }
 
+func UnmarshalSearchInput(v interface{}) (SearchInput, error) {
+	var it SearchInput
+	var asMap = v.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "type":
+			var err error
+			var ptr1 SearchType
+			if v != nil {
+				err = (&ptr1).UnmarshalGQL(v)
+				it.Type = &ptr1
+			}
+
+			if err != nil {
+				return it, err
+			}
+		case "term":
+			var err error
+			var ptr1 string
+			if v != nil {
+				ptr1, err = graphql.UnmarshalString(v)
+				it.Term = &ptr1
+			}
+
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) FieldMiddleware(ctx context.Context, obj interface{}, next graphql.Resolver) (ret interface{}) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -11309,9 +11343,21 @@ input CharacterQueryInput {
   region: String!
 }
 
+enum SearchType {
+  FUZZY
+  REGEXP
+  WILDCARD
+  NORMAL
+}
+
+input SearchInput {
+  type: SearchType
+  term: String
+}
+
 type Query {
   character(input: CharacterQueryInput!): Character
-  mounts(searchTerm: String!): [Mount]!
+  mounts(input: SearchInput!): [Mount]!
 }
 `},
 )

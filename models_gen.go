@@ -246,6 +246,11 @@ type Reputation struct {
 	Max      *int    `json:"max"`
 }
 
+type SearchInput struct {
+	Type *SearchType `json:"type"`
+	Term *string     `json:"term"`
+}
+
 type TransmogItem struct {
 	ItemID                      *int `json:"itemId"`
 	ItemAppearanceModID         *int `json:"itemAppearanceModId"`
@@ -287,5 +292,43 @@ func (e *CharacterFeedItemType) UnmarshalGQL(v interface{}) error {
 }
 
 func (e CharacterFeedItemType) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type SearchType string
+
+const (
+	SearchTypeFuzzy    SearchType = "FUZZY"
+	SearchTypeRegexp   SearchType = "REGEXP"
+	SearchTypeWildcard SearchType = "WILDCARD"
+	SearchTypeNormal   SearchType = "NORMAL"
+)
+
+func (e SearchType) IsValid() bool {
+	switch e {
+	case SearchTypeFuzzy, SearchTypeRegexp, SearchTypeWildcard, SearchTypeNormal:
+		return true
+	}
+	return false
+}
+
+func (e SearchType) String() string {
+	return string(e)
+}
+
+func (e *SearchType) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = SearchType(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid SearchType", str)
+	}
+	return nil
+}
+
+func (e SearchType) MarshalGQL(w io.Writer) {
 	fmt.Fprint(w, strconv.Quote(e.String()))
 }
